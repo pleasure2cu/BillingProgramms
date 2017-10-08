@@ -1,7 +1,7 @@
+import SafetyFunctions
 import xlsxwriter
 import time
 import datetime
-import SaftyClass
 
 
 input_path = ''
@@ -226,7 +226,7 @@ def addLine(zeile, sheet1, sheet2, datum, optionen, font1, font2):
                 mengen = input('Wie viele Eier wurden am ' + datum + ' geliefert? ')
             else:
                 mengen = input('Wie viele Eier wurden am ' + datum + ' geliefert (anzahl art ...)? ')
-            SaftyClass.pruefeVerteilung(mengen, len(optionen))
+            SafetyFunctions.pruefeVerteilung(mengen, len(optionen))
             break
         except ValueError as e:
             print(e.args[0])
@@ -301,7 +301,7 @@ print('\n')
 
 listeKunden = getList(input_path)
 try:
-    SaftyClass.alleAdressenVorhanden(input_path, listeKunden)
+    SafetyFunctions.alleAdressenVorhanden(input_path, listeKunden)
 except ValueError as e:
     print(e.args[0])
     print("Schliessen Sie dieses Programm, fügen Sie die Adresse hinzu und starten Sie das Programm neu.")
@@ -350,7 +350,7 @@ for i in range(len(listeKunden)):
         while True:
             try:
                 datum = input('Falls es noch eine Lieferung gibt, dessen Datum eintragen (sonst einfach ENTER drücken): ').strip()
-                SaftyClass.pruefeDatum(datum)
+                SafetyFunctions.pruefeDatum(datum)
                 break
             except ValueError as e:
                 print(e.args[0])
