@@ -1,1 +1,1 @@
-# RechungsProgramme
+##### to actually use these programs you need to set up 2 folders (one folder with the .txt files about the customers and a folder for the output), change the source code according to those folders, and provide .txt files with information about the customers in the required format (fist line their name, second their street name and house number and third their postal code. This is the format for Rechnung.py and the Lohnabrechnung.py programm. For the third program it is a bit more complicated).
