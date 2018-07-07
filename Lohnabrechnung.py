@@ -2,7 +2,10 @@ import xlsxwriter
 import datetime
 import glob
 
-
+path_for_input = ''
+path_for_output = ''
+mwst_satz_klein = 2.5
+mwst_satz_gross = 7.7
 
 def findPricePerPiece(anzahl_einheiten):
 	""" caputres the price structure """
@@ -62,8 +65,6 @@ def setColumnWidths(worksheet, sheet):
 
 ### alle grundsätzlichen Dinge
 
-path_for_input = ''
-path_for_output = ''
 
 # Zeiten
 t = datetime.date.today()
@@ -77,7 +78,7 @@ kunden = glob.glob(path+'*.txt')
 rechnungsperiode = input('Rechnungsperiode (wird auf den Rechnungen stehen): ')
 
 # bringe die erste verwendbare Rechnungsnummer in Erfahrung
-basis = int(input('Erste Rechnungsnummer die verwendet werden darft: '))
+basis = int(input('Erste Rechnungsnummer die verwendet werden darf: '))
 print('')
 
 # offset der Rechnungsnummer
@@ -559,7 +560,7 @@ for kunde in kunden:
                             preis_pro_einheit = float(input('Was soll bei "Preis" stehen? '))
                             worksheet.write(zeile, 3, preis_pro_einheit, betrage_tabelle)
                             worksheet.write(zeile, 4, anzahl_einheiten*preis_pro_einheit, betrage_tabelle)
-                            mwst_kategorie = int(input('Zu welcher MwSt.-Kategorie gehört der Eintrag (0 = MwSt. bereits enthalten, 1 = 2.5 prozent, 2 = 8 prozent)? '))
+                            mwst_kategorie = int(input('Zu welcher MwSt.-Kategorie gehört der Eintrag (0 = MwSt. bereits enthalten, 1 = '+str(mwst_satz_klein)+' prozent, 2 = '+str(mwst_satz_gross)+' prozent)? '))
                             worksheet.write(zeile, 5, mwst_kategorie, integer_tabelle)
 
                             sheet.write(zeile, 0, arbeits_datum, Umrandet)
@@ -614,15 +615,15 @@ for kunde in kunden:
         
         zeile += 1
 
-        # Zeile '8% MwSt'
-        worksheet.write(zeile, 2, '8   % Mehrwertsteuer von', umrandet)
-        sheet.write(zeile, 2, '8   % Mehrwertsteuer von', umrandet)
+        # Zeile '*grosser_satz*% MwSt'
+        worksheet.write(zeile, 2, str(mwst_satz_gross)+' % Mehrwertsteuer von', umrandet)
+        sheet.write(zeile, 2, str(mwst_satz_gross)+' % Mehrwertsteuer von', umrandet)
         if total_betrage_ohne_grosse_mwst > 0:
             worksheet.write(zeile, 3, total_betrage_ohne_grosse_mwst, umrandet_betrage_grauhinterlegt)
-            worksheet.write(zeile, 4, '=D'+str(zeile+1)+'*0.08', umrandet_betrage_grauhinterlegt)
+            worksheet.write(zeile, 4, '=D'+str(zeile+1)+'*'+str(mwst_satz_gross/100), umrandet_betrage_grauhinterlegt)
 
             sheet.write(zeile, 3, total_betrage_ohne_grosse_mwst, Umrandet_betrage_grauhinterlegt)
-            sheet.write(zeile, 4, '=D'+str(zeile+1)+'*0.08', Umrandet_betrage_grauhinterlegt)
+            sheet.write(zeile, 4, '=D'+str(zeile+1)+'*'+str(mwst_satz_gross/100), Umrandet_betrage_grauhinterlegt)
             
         else:
             worksheet.write(zeile, 3, '', umrandet)
@@ -636,15 +637,15 @@ for kunde in kunden:
         zeile += 1
 
         
-        # Zeile '2.5% MwSt'
-        worksheet.write(zeile, 2, '2.5% Mehrwertsteuer von', umrandet)
-        sheet.write(zeile, 2, '2.5% Mehrwertsteuer von', umrandet)
+        # Zeile '*kleiner_satz*% MwSt'
+        worksheet.write(zeile, 2, str(mwst_satz_klein)+' % Mehrwertsteuer von', umrandet)
+        sheet.write(zeile, 2, str(mwst_satz_klein)+' % Mehrwertsteuer von', umrandet)
         if total_betrage_ohne_kleine_mwst > 0:
             worksheet.write(zeile, 3, total_betrage_ohne_kleine_mwst, umrandet_betrage_grauhinterlegt)
-            worksheet.write(zeile, 4, '=D'+str(zeile+1)+'*0.025', umrandet_betrage_grauhinterlegt)
+            worksheet.write(zeile, 4, '=D'+str(zeile+1)+'*'+str(mwst_satz_klein/100), umrandet_betrage_grauhinterlegt)
 
             sheet.write(zeile, 3, total_betrage_ohne_kleine_mwst, Umrandet_betrage_grauhinterlegt)
-            sheet.write(zeile, 4, '=D'+str(zeile+1)+'*0.025', Umrandet_betrage_grauhinterlegt)
+            sheet.write(zeile, 4, '=D'+str(zeile+1)+'*'+str(mwst_satz_klein/100), Umrandet_betrage_grauhinterlegt)
         else:
             worksheet.write(zeile, 3, '', umrandet)
             worksheet.write(zeile, 4, '', umrandet)
@@ -659,10 +660,10 @@ for kunde in kunden:
 
         # Zeile 'Total Rechnung'
         worksheet.write(zeile, 2, 'Total Rechnung', fett)
-        worksheet.write(zeile, 4, '=ROUND((D'+str(zeile)+'*1.025+D'+str(zeile-1)+'*1.08)*20, 0)/20+'+str(total_betrage_bereits_mit_mwst), umrandet_betrage_grauhinterlegt_fett)
+        worksheet.write(zeile, 4, '=ROUND((D'+str(zeile)+'*'+str(1+mwst_satz_klein)+'+D'+str(zeile-1)+'*'+str(1+mwst_satz_gross)+')*20, 0)/20+'+str(total_betrage_bereits_mit_mwst), umrandet_betrage_grauhinterlegt_fett)
 
         sheet.write(zeile, 2, 'Total Rechnung', Fett)
-        sheet.write(zeile, 4, '=ROUND((D'+str(zeile)+'*1.025+D'+str(zeile-1)+'*1.08)*20, 0)/20+'+str(total_betrage_bereits_mit_mwst), umrandet_betrage_grauhinterlegt_fett)
+        sheet.write(zeile, 4, '=ROUND((D'+str(zeile)+'*'+str(1+mwst_satz_klein)+'+D'+str(zeile-1)+'*'+str(1+mwst_satz_gross)+')*20, 0)/20+'+str(total_betrage_bereits_mit_mwst), umrandet_betrage_grauhinterlegt_fett)
         
         zeile += 1
 
@@ -716,7 +717,7 @@ for kunde in kunden:
             tatsachliche_liste.write(tatsachliche_liste_counter, 0, rechnungsnummer)
             tatsachliche_liste.write(tatsachliche_liste_counter, 1, 'Lohnarbeiten')
             tatsachliche_liste.write(tatsachliche_liste_counter, 2, name)
-            tatsachliche_liste.write(tatsachliche_liste_counter, 3, int((total_betrage_ohne_kleine_mwst*1.025+total_betrage_ohne_grosse_mwst*1.08)*20.0+0.5)/20.0,rechnungsbetrage)
+            tatsachliche_liste.write(tatsachliche_liste_counter, 3, int((total_betrage_ohne_kleine_mwst*(1+mwst_satz_klein)+total_betrage_ohne_grosse_mwst*(1+mwst_satz_gross))*20.0+0.5)/20.0,rechnungsbetrage)
             tatsachliche_liste.write(tatsachliche_liste_counter, 4, today)
         tatsachliche_liste_counter += 1
 
